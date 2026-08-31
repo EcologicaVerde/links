@@ -1,11 +1,11 @@
 // script.js
 (function() {
     var followersData = {
-        twitter: '4698',
-        instagram: '1281',
-        threads: '42',
-        tiktok: '146',
-        facebook: '20',
+        twitter: '13200',
+        instagram: '1478',
+        threads: '71',
+        tiktok: '350',
+        facebook: '35',
         discord: '58329',
         bluesky: '25100'
     };
@@ -265,7 +265,7 @@
         if (link.useFavicon) {
             iconHtml = '<img src="assets/logo/favicon.png" alt="Site">';
         } else if (link.styleClass === 'bluesky') {
-            iconHtml = '<span style="font-size:1.2rem;">🦋</span>';
+            iconHtml = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 10.8C9.6 8.4 4.8 4.8 2.4 6.6C0 8.4 0 12 2.4 14.4C4.8 16.8 9.6 16.8 12 14.4C14.4 16.8 19.2 16.8 21.6 14.4C24 12 24 8.4 21.6 6.6C19.2 4.8 14.4 8.4 12 10.8Z"/><path d="M12 10.8C14.4 8.4 19.2 4.8 21.6 6.6C24 8.4 24 12 21.6 14.4C19.2 16.8 14.4 16.8 12 14.4"/></svg>';
         } else {
             iconHtml = '<i class="fa-brands ' + link.icon + '"></i>';
         }

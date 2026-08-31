@@ -374,15 +374,15 @@ body {
 .icon-box.bluesky {
     background: #1185fe;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.icon-box.bluesky::after {
-    content: '🦋';
-    font-size: 1.2rem;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.icon-box.bluesky svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
 }
 
 .icon-box.bluesky i {
@@ -886,6 +886,11 @@ body {
         font-size: 1rem;
     }
     
+    .icon-box.bluesky svg {
+        width: 20px;
+        height: 20px;
+    }
+    
     .link-user {
         font-size: 0.78rem;
     }
@@ -955,8 +960,9 @@ body {
         font-size: 0.95rem;
     }
     
-    .icon-box.bluesky::after {
-        font-size: 1rem;
+    .icon-box.bluesky svg {
+        width: 18px;
+        height: 18px;
     }
     
     .link-label {
