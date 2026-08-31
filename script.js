@@ -1,4 +1,3 @@
-// script.js
 (function() {
     var followersData = {
         twitter: '13200',
