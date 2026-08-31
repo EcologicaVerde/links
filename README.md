@@ -5,11 +5,13 @@ Página de links oficial da Ecológica Verde.
 ## Links
 
 - Site: https://ecologica2verde.online/
-- Twitter/X: https://x.com/Ecologica3Verde
-- Threads: https://www.threads.net/@ecologicaverde
-- TikTok: https://www.tiktok.com/@ecologica2verde
-- Instagram: https://www.instagram.com/ecologicaverde
+- BlueSky: https://bsky.app/profile/ecologica.bsky.social
+- Discord: https://discord.com/invite/ZPbzpcPwFf
 - Facebook: https://www.facebook.com/ecologica2verde
+- Instagram: https://www.instagram.com/ecologicaverde/
+- Threads: https://www.threads.com/@ecologicaverde
+- TikTok: https://www.tiktok.com/@ecologica2verde
+- Twitter: https://x.com/Ecologica3Verde
 
 ## Atualização de Seguidores
 
