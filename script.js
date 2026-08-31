@@ -127,6 +127,15 @@
             useFavicon: true
         },
         {
+            nameKey: 'bluesky',
+            username: '@ecologica.bsky.social',
+            url: 'https://bsky.app/profile/ecologica.bsky.social',
+            icon: 'fa-bluesky',
+            styleClass: 'bluesky',
+            hasFollowers: true,
+            key: 'bluesky'
+        },
+        {
             nameKey: 'twitter',
             username: '@Ecologica3Verde',
             url: 'https://x.com/Ecologica3Verde',
@@ -180,15 +189,6 @@
             hasFollowers: true,
             key: 'discord',
             followersLabelKey: 'members'
-        },
-        {
-            nameKey: 'bluesky',
-            username: '@ecologicaverde.bsky.social',
-            url: 'https://bsky.app/profile/ecologicaverde.bsky.social',
-            icon: 'fa-bluesky',
-            styleClass: 'bluesky',
-            hasFollowers: true,
-            key: 'bluesky'
         }
     ];
 
@@ -264,6 +264,8 @@
         var iconHtml = '';
         if (link.useFavicon) {
             iconHtml = '<img src="assets/logo/favicon.png" alt="Site">';
+        } else if (link.styleClass === 'bluesky') {
+            iconHtml = '<span style="font-size:1.2rem;">🦋</span>';
         } else {
             iconHtml = '<i class="fa-brands ' + link.icon + '"></i>';
         }

@@ -373,6 +373,20 @@ body {
 
 .icon-box.bluesky {
     background: #1185fe;
+    position: relative;
+}
+
+.icon-box.bluesky::after {
+    content: '🦋';
+    font-size: 1.2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.icon-box.bluesky i {
+    display: none;
 }
 
 .link-info {
@@ -939,6 +953,10 @@ body {
         width: 34px;
         height: 34px;
         font-size: 0.95rem;
+    }
+    
+    .icon-box.bluesky::after {
+        font-size: 1rem;
     }
     
     .link-label {
