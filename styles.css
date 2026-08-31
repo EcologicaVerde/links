@@ -1,3 +1,4 @@
+/* styles.css */
 * {
     margin: 0;
     padding: 0;
@@ -368,6 +369,10 @@ body {
 
 .icon-box.discord {
     background: #5865F2;
+}
+
+.icon-box.bluesky {
+    background: #1185fe;
 }
 
 .link-info {

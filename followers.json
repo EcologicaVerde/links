@@ -1,9 +1,11 @@
+// followers.json
 {
-  "twitter": "13200",
-  "instagram": "1478",
-  "threads": "71",
-  "tiktok": "350",
-  "facebook": "35",
-  "discord": "59385",
-  "lastUpdated": "2026-08-31T07:51:43.253Z"
+  "twitter": "4698",
+  "instagram": "1281",
+  "threads": "42",
+  "tiktok": "146",
+  "facebook": "20",
+  "discord": "58329",
+  "bluesky": "25100",
+  "lastUpdated": "2026-05-11T00:00:00.000Z"
 }

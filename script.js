@@ -1,11 +1,13 @@
+// script.js
 (function() {
     var followersData = {
-        twitter: '5421',
-        instagram: '1291',
-        threads: '48',
-        tiktok: '213',
-        facebook: '21',
-        discord: '58368'
+        twitter: '4698',
+        instagram: '1281',
+        threads: '42',
+        tiktok: '146',
+        facebook: '20',
+        discord: '58329',
+        bluesky: '25100'
     };
 
     var currentLanguage = 'pt';
@@ -33,6 +35,7 @@
             instagram: 'Instagram',
             facebook: 'Facebook',
             discord: 'Servidor Discord',
+            bluesky: 'BlueSky',
             members: 'membros',
             followers: 'seguidores',
             musicSection: 'Música',
@@ -56,6 +59,7 @@
             instagram: 'Instagram',
             facebook: 'Facebook',
             discord: 'Discord Server',
+            bluesky: 'BlueSky',
             members: 'members',
             followers: 'followers',
             musicSection: 'Music',
@@ -79,6 +83,7 @@
             instagram: 'Instagram',
             facebook: 'Facebook',
             discord: 'Servidor Discord',
+            bluesky: 'BlueSky',
             members: 'miembros',
             followers: 'seguidores',
             musicSection: 'Música',
@@ -102,6 +107,7 @@
             instagram: 'Instagram',
             facebook: 'Facebook',
             discord: 'Discord сервер',
+            bluesky: 'BlueSky',
             members: 'участников',
             followers: 'подписчиков',
             musicSection: 'Музыка',
@@ -174,6 +180,15 @@
             hasFollowers: true,
             key: 'discord',
             followersLabelKey: 'members'
+        },
+        {
+            nameKey: 'bluesky',
+            username: '@ecologicaverde.bsky.social',
+            url: 'https://bsky.app/profile/ecologicaverde.bsky.social',
+            icon: 'fa-bluesky',
+            styleClass: 'bluesky',
+            hasFollowers: true,
+            key: 'bluesky'
         }
     ];
 
@@ -300,6 +315,7 @@
                     if (data.tiktok) followersData.tiktok = data.tiktok;
                     if (data.facebook) followersData.facebook = data.facebook;
                     if (data.discord) followersData.discord = data.discord;
+                    if (data.bluesky) followersData.bluesky = data.bluesky;
                 } catch (e) {}
             }
             renderLinks();

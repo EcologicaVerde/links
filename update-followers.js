@@ -1,3 +1,4 @@
+// update-followers.js
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
@@ -11,6 +12,7 @@ let followers = {
     tiktok: '146',
     facebook: '20',
     discord: '58329',
+    bluesky: '25100',
     lastUpdated: new Date().toISOString()
 };
 
@@ -54,6 +56,7 @@ async function updateAllFollowers() {
     console.log('🎵 TikTok (manual):', followers.tiktok);
     console.log('📘 Facebook (manual):', followers.facebook);
     console.log('🎮 Discord (automático):', followers.discord);
+    console.log('🦋 BlueSky (manual):', followers.bluesky);
     console.log('────────────────────────────────────────');
     
     followers.lastUpdated = new Date().toISOString();
@@ -64,6 +67,7 @@ async function updateAllFollowers() {
     followers.threads = existingData.threads || followers.threads;
     followers.tiktok = existingData.tiktok || followers.tiktok;
     followers.facebook = existingData.facebook || followers.facebook;
+    followers.bluesky = existingData.bluesky || followers.bluesky;
     
     fs.writeFileSync(followersFile, JSON.stringify(followers, null, 2), 'utf8');
     console.log('\n✅ Arquivo followers.json atualizado com sucesso!');
