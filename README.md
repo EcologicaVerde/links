@@ -11,7 +11,7 @@ Página de links oficial da Ecológica Verde.
 - Instagram: https://www.instagram.com/ecologicaverde/
 - Threads: https://www.threads.com/@ecologicaverde
 - TikTok: https://www.tiktok.com/@ecologica2verde
-- Twitter: https://x.com/Ecologica3Verde
+- Twitter: https://x.com/oficialecoverde
 
 ## Atualização de Seguidores
 
