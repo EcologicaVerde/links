@@ -136,8 +136,8 @@
         },
         {
             nameKey: 'twitter',
-            username: '@Ecologica3Verde',
-            url: 'https://x.com/Ecologica3Verde',
+            username: '@oficialecoverde',
+            url: 'https://x.com/oficialecoverde',
             icon: 'fa-x-twitter',
             styleClass: 'twitter',
             hasFollowers: true,
