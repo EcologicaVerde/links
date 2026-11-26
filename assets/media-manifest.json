@@ -1,5 +1,6 @@
 {
   "music": [
+    "OST1.m4a",
     "OST1.mp3",
     "OST2.m4a",
     "OST3.m4a",
@@ -15,8 +16,9 @@
     "7.jpg",
     "8.jpg",
     "9.jpg",
-    "10.jpg",
-    "12.jpg"
+    "10.png",
+    "12.jpg",
+    "wallpaper.jpg"
   ],
-  "generatedAt": "2026-11-26T04:58:19.063Z"
+  "generatedAt": "2026-11-26T19:22:08.309Z"
 }
