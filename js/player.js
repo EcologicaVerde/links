@@ -2,8 +2,12 @@
     'use strict';
 
     var FALLBACK_FILES = ['OST1.mp3', 'OST2.m4a', 'OST3.m4a', 'OST4.m4a'];
+    var LAST_MUSIC_STORAGE_KEY = 'ecologica_last_music';
 
-    function cryptoRandomInt(max) {
+    function randomInt(max) {
+        if (global.EcologicaMedia && typeof global.EcologicaMedia.randomInt === 'function') {
+            return global.EcologicaMedia.randomInt(max);
+        }
         if (max <= 1) return 0;
         if (global.crypto && typeof global.crypto.getRandomValues === 'function') {
             var range = 0x100000000;
@@ -17,19 +21,37 @@
         return Math.floor(Math.random() * max);
     }
 
-    function buildShuffledOrder(length, avoidFirstIndex) {
+    function readLastMusic() {
+        try {
+            return localStorage.getItem(LAST_MUSIC_STORAGE_KEY);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function saveLastMusic(file) {
+        if (!file) return;
+        try {
+            localStorage.setItem(LAST_MUSIC_STORAGE_KEY, file);
+        } catch (e) {}
+    }
+
+    /**
+     * Builds a shuffled index order that never starts on avoidIndex when multiple tracks exist.
+     */
+    function buildShuffledOrder(length, avoidIndex) {
         var order = [];
         for (var i = 0; i < length; i++) {
             order.push(i);
         }
         for (var j = order.length - 1; j > 0; j--) {
-            var k = cryptoRandomInt(j + 1);
+            var k = randomInt(j + 1);
             var tmp = order[j];
             order[j] = order[k];
             order[k] = tmp;
         }
-        if (length > 1 && avoidFirstIndex >= 0 && order[0] === avoidFirstIndex) {
-            var swapIdx = 1 + cryptoRandomInt(length - 1);
+        if (length > 1 && avoidIndex >= 0 && order[0] === avoidIndex) {
+            var swapIdx = 1 + randomInt(length - 1);
             var first = order[0];
             order[0] = order[swapIdx];
             order[swapIdx] = first;
@@ -106,9 +128,12 @@
                 ? global.EcologicaMedia.fallbackMusic.slice()
                 : FALLBACK_FILES.slice());
 
+        var lastPlayed = readLastMusic();
+        var avoidIdx = lastPlayed ? files.indexOf(lastPlayed) : -1;
+
         this.started = true;
         this.playlist = files;
-        this.playOrder = buildShuffledOrder(this.playlist.length, -1);
+        this.playOrder = buildShuffledOrder(this.playlist.length, avoidIdx);
         this.orderCursor = 0;
         this.songIndex = this.playOrder[0] || 0;
         this.failedAttempts = 0;
@@ -145,15 +170,20 @@
         this.playlist = newFiles.slice();
         this.failedAttempts = 0;
 
-        // If playback hasn't actually started yet, re-draw so new tracks participate on open
+        // If playback hasn't begun yet, include newly discovered tracks without repeating current/last track
         if (!this.isPlaying && (this.audio.currentTime || 0) === 0) {
-            this.playOrder = buildShuffledOrder(this.playlist.length, -1);
+            var avoidIdx = this.playlist.indexOf(currentFile);
+            if (avoidIdx === -1) {
+                var lastFile = readLastMusic();
+                avoidIdx = lastFile ? this.playlist.indexOf(lastFile) : -1;
+            }
+            this.playOrder = buildShuffledOrder(this.playlist.length, avoidIdx);
             this.orderCursor = 0;
             this.loadTrack(this.playOrder[0], this.wantsAutoplay);
             return;
         }
 
-        // Already playing: keep current track active and reshuffle remaining tracks
+        // Already playing: keep active track uninterrupted and reshuffle remaining tracks
         var keptIdx = this.playlist.indexOf(currentFile);
         if (keptIdx === -1) {
             this.playOrder = buildShuffledOrder(this.playlist.length, -1);
@@ -167,7 +197,7 @@
             if (i !== keptIdx) remaining.push(i);
         }
         for (var j = remaining.length - 1; j > 0; j--) {
-            var k = cryptoRandomInt(j + 1);
+            var k = randomInt(j + 1);
             var tmp = remaining[j];
             remaining[j] = remaining[k];
             remaining[k] = tmp;
@@ -321,6 +351,7 @@
 
         this.songIndex = ((index % total) + total) % total;
         var file = this.playlist[this.songIndex];
+        saveLastMusic(file);
         this.audio.src = 'assets/music/' + encodeURIComponent(file);
         this.audio.load();
         this.notify();
@@ -352,7 +383,11 @@
     MusicEngine.prototype.prev = function(forcePlay) {
         if (!this.started || this.playlist.length === 0) return;
         this.orderCursor = (this.orderCursor - 1 + this.playOrder.length) % this.playOrder.length;
-        this.loadTrack(this.playOrder[this.orderCursor], forcePlay || this.isPlaying || this.wantsAutoplay);
+        var prevIdx = this.playOrder[this.orderCursor];
+        if (this.playlist.length > 1 && prevIdx === this.songIndex) {
+            prevIdx = (this.songIndex - 1 + this.playlist.length) % this.playlist.length;
+        }
+        this.loadTrack(prevIdx, forcePlay || this.isPlaying || this.wantsAutoplay);
     };
 
     MusicEngine.prototype.next = function(forcePlay) {
@@ -363,7 +398,11 @@
         } else {
             this.orderCursor += 1;
         }
-        this.loadTrack(this.playOrder[this.orderCursor], forcePlay || this.isPlaying || this.wantsAutoplay);
+        var nextIdx = this.playOrder[this.orderCursor];
+        if (this.playlist.length > 1 && nextIdx === this.songIndex) {
+            nextIdx = (this.songIndex + 1) % this.playlist.length;
+        }
+        this.loadTrack(nextIdx, forcePlay || this.isPlaying || this.wantsAutoplay);
     };
 
     MusicEngine.prototype.setVolume = function(pct) {

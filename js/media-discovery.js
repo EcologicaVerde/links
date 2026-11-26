@@ -16,6 +16,114 @@
         });
     }
 
+    function randomInt(max) {
+        if (max <= 1) return 0;
+        if (global.crypto && typeof global.crypto.getRandomValues === 'function') {
+            var range = 0x100000000;
+            var limit = range - (range % max);
+            var buf = new Uint32Array(1);
+            do {
+                global.crypto.getRandomValues(buf);
+            } while (buf[0] >= limit);
+            return buf[0] % max;
+        }
+        return Math.floor(Math.random() * max);
+    }
+
+    function shuffleAvoidingKey(list, getKey, avoidKey) {
+        var copy = list.slice();
+        for (var i = copy.length - 1; i > 0; i--) {
+            var j = randomInt(i + 1);
+            var tmp = copy[i];
+            copy[i] = copy[j];
+            copy[j] = tmp;
+        }
+        if (copy.length > 1 && avoidKey !== null && avoidKey !== undefined && getKey(copy[0]) === avoidKey) {
+            var swapIdx = 1 + randomInt(copy.length - 1);
+            var first = copy[0];
+            copy[0] = copy[swapIdx];
+            copy[swapIdx] = first;
+        }
+        return copy;
+    }
+
+    function readStorage(key) {
+        if (!key) return null;
+        try {
+            return global.localStorage ? global.localStorage.getItem(key) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function writeStorage(key, value) {
+        if (!key) return;
+        try {
+            if (global.localStorage) {
+                global.localStorage.setItem(key, String(value));
+            }
+        } catch (e) {}
+    }
+
+    /**
+     * Builds a random shuffle-bag deck that never repeats the last selected item consecutively.
+     */
+    function createNoRepeatDeck(getItems, getKey, storageKey) {
+        var keyFn = getKey || function(item) { return String(item); };
+        var queue = [];
+        var lastKey = readStorage(storageKey);
+
+        function refill() {
+            var source = getItems() || [];
+            queue = shuffleAvoidingKey(source, keyFn, lastKey);
+        }
+
+        function next() {
+            var source = getItems() || [];
+            if (source.length === 0) return null;
+            if (queue.length === 0) {
+                refill();
+            }
+            var candidate = queue.shift();
+            if (source.length > 1 && lastKey !== null && keyFn(candidate) === lastKey) {
+                refill();
+                if (queue.length > 0 && keyFn(queue[0]) !== lastKey) {
+                    candidate = queue.shift();
+                } else {
+                    for (var i = 0; i < source.length; i++) {
+                        if (keyFn(source[i]) !== lastKey) {
+                            candidate = source[i];
+                            break;
+                        }
+                    }
+                }
+            }
+            lastKey = keyFn(candidate);
+            writeStorage(storageKey, lastKey);
+            return candidate;
+        }
+
+        function peek(count) {
+            var source = getItems() || [];
+            if (source.length === 0 || count <= 0) return [];
+            if (queue.length === 0) {
+                refill();
+            }
+            return queue.slice(0, count);
+        }
+
+        function resetKeepLast() {
+            queue = [];
+        }
+
+        return {
+            next: next,
+            peek: peek,
+            resetKeepLast: resetKeepLast,
+            getLastKey: function() { return lastKey; }
+        };
+    }
+
     function dedupeAndSort(list, extRegex) {
         var seen = Object.create(null);
         var clean = [];
@@ -178,6 +286,9 @@
         fallbackWallpapers: FALLBACK_WALLPAPERS,
         formatTrackTitle: formatTrackTitle,
         naturalSort: naturalSort,
+        randomInt: randomInt,
+        shuffleAvoidingKey: shuffleAvoidingKey,
+        createNoRepeatDeck: createNoRepeatDeck,
         dedupeAudio: function(list) { return dedupeAndSort(list || [], AUDIO_EXT_RE); },
         dedupeImages: function(list) { return dedupeAndSort(list || [], IMAGE_EXT_RE); },
         discoverAll: discoverAll

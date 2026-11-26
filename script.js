@@ -13,8 +13,8 @@
 
     var currentLanguage = 'pt';
     var activeSceneId = 'hero';
-    var activeWallpaperSrc = null;
-    var wallpaperQueue = [];
+    var wallpaperDeck = null;
+    var transitionDeck = null;
     var activeLayerIndex = 0;
     var countUpDone = false;
     var stageFX = null;
@@ -84,7 +84,7 @@
     }
 
     /* =========================================================
-       RANDOM NON-SEQUENTIAL WALLPAPER SHUFFLER (DYNAMIC MEDIA)
+       NON-REPEATING RANDOM WALLPAPER & TRANSITION SHUFFLERS
        ========================================================= */
     function sameWallpaperList(a, b) {
         if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
@@ -92,6 +92,28 @@
             if ((a[i] && a[i].src) !== b[i]) return false;
         }
         return true;
+    }
+
+    function ensureWallpaperDeck() {
+        if (!wallpaperDeck) {
+            wallpaperDeck = window.EcologicaMedia.createNoRepeatDeck(
+                function() { return window.EcologicaScenes.wallpapers; },
+                function(item) { return item && item.src; },
+                'ecologica_last_wallpaper'
+            );
+        }
+        return wallpaperDeck;
+    }
+
+    function ensureTransitionDeck() {
+        if (!transitionDeck) {
+            transitionDeck = window.EcologicaMedia.createNoRepeatDeck(
+                function() { return window.EcologicaScenes.transitions; },
+                function(item) { return String(item); },
+                'ecologica_last_transition'
+            );
+        }
+        return transitionDeck;
     }
 
     function updateWallpapersCatalog(wallpaperFiles) {
@@ -102,55 +124,36 @@
         if (sameWallpaperList(window.EcologicaScenes.wallpapers, expectedSrcs)) return;
         if (window.EcologicaScenes.setWallpapers) {
             window.EcologicaScenes.setWallpapers(wallpaperFiles);
-            wallpaperQueue = [];
+            if (wallpaperDeck) {
+                wallpaperDeck.resetKeepLast();
+            }
         }
     }
 
-    function refillWallpaperQueue() {
-        var list = window.EcologicaScenes.wallpapers.slice();
-        for (var i = list.length - 1; i > 0; i--) {
-            var j = Math.floor(Math.random() * (i + 1));
-            var tmp = list[i];
-            list[i] = list[j];
-            list[j] = tmp;
+    function warmUpcomingWallpapers() {
+        var deck = ensureWallpaperDeck();
+        var upcoming = deck.peek(2);
+        for (var i = 0; i < upcoming.length; i++) {
+            var img = new Image();
+            img.src = encodeURI(upcoming[i].src);
         }
-        if (activeWallpaperSrc && list.length > 1 && list[0].src === activeWallpaperSrc) {
-            var swapIdx = 1 + Math.floor(Math.random() * (list.length - 1));
-            var t = list[0];
-            list[0] = list[swapIdx];
-            list[swapIdx] = t;
-        }
-        wallpaperQueue = list;
     }
 
     function pickRandomWallpaper() {
-        if (wallpaperQueue.length === 0) {
-            refillWallpaperQueue();
-        }
-        var nextItem = wallpaperQueue.shift();
-        activeWallpaperSrc = nextItem.src;
+        var deck = ensureWallpaperDeck();
+        var nextItem = deck.next();
         warmUpcomingWallpapers();
         return nextItem;
     }
 
-    function warmUpcomingWallpapers() {
-        if (wallpaperQueue.length === 0) {
-            refillWallpaperQueue();
-        }
-        var lookahead = Math.min(2, wallpaperQueue.length);
-        for (var i = 0; i < lookahead; i++) {
-            var img = new Image();
-            img.src = encodeURI(wallpaperQueue[i].src);
-        }
+    function pickRandomTransition() {
+        return ensureTransitionDeck().next() || 'radial';
     }
 
     function applyWallpaperTransition(wallItem, immediate) {
         var layerA = document.getElementById('bgLayerA');
         var layerB = document.getElementById('bgLayerB');
         if (!layerA || !layerB || !wallItem) return;
-
-        var transitions = window.EcologicaScenes.transitions;
-        var randomTrans = transitions[Math.floor(Math.random() * transitions.length)];
 
         var incoming = activeLayerIndex === 0 ? layerB : layerA;
         var outgoing = activeLayerIndex === 0 ? layerA : layerB;
@@ -173,6 +176,7 @@
             incoming.classList.add('is-active');
             outgoing.className = 'bg-layer';
         } else {
+            var randomTrans = pickRandomTransition();
             incoming.classList.add('is-active', 'trans-' + randomTrans);
             outgoing.className = 'bg-layer is-leaving';
         }
