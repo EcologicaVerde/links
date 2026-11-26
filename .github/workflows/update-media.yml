@@ -1,0 +1,42 @@
+name: Update Media Manifest
+
+on:
+  push:
+    paths:
+      - 'assets/music/**'
+      - 'assets/wallpaper/**'
+      - 'update-media.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate media manifest
+        run: node update-media.js
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/media-manifest.json
+          if git diff --staged --quiet; then
+            echo "No media changes to commit"
+          else
+            git commit -m "chore: update music and wallpaper manifest [skip ci]"
+            git push
+          fi
