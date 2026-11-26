@@ -4,7 +4,8 @@
   "description": "Ecológica Verde Links Page",
   "main": "update-followers.js",
   "scripts": {
-    "update": "node update-followers.js"
+    "update": "node update-followers.js",
+    "update-media": "node update-media.js"
   },
   "dependencies": {
     "axios": "^1.6.0"

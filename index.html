@@ -1,136 +1,201 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecológica Verde | Links</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#050806">
+    <meta name="description" content="Ecológica Verde — Hub oficial de links, redes sociais e comunidade.">
+    <meta property="og:title" content="Ecológica Verde | Hub Oficial de Links">
+    <meta property="og:description" content="Divulgando coisas 'compradas' ecologicamente. Acesse todas as redes oficiais em um só lugar.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/logo/logo.png">
+    <title>Ecológica Verde | Hub Oficial de Links</title>
     <link rel="icon" type="image/png" href="assets/logo/favicon.png">
-    <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="wallpaper-bg"></div>
-    <div class="overlay-bg"></div>
-    <div class="particles-container" id="particles"></div>
-    <div class="fog-effect"></div>
-
-    <div class="language-selector-bottom" id="languageSelectorBottom">
-        <button class="language-menu-btn" id="languageMenuBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m5 8 6 6"></path>
-                <path d="m4 14 6-6 2-3"></path>
-                <path d="M2 5h12"></path>
-                <path d="M7 2h1"></path>
-                <path d="m22 22-5-10-5 10"></path>
-                <path d="M14 18h6"></path>
-            </svg>
-            <span id="currentLanguageLabel">Português</span>
-        </button>
-        
-        <div class="language-dropdown" id="languageDropdown">
-            <button class="lang-option" data-lang="pt">🇧🇷 Português</button>
-            <button class="lang-option" data-lang="en">🇺🇸 English</button>
-            <button class="lang-option" data-lang="es">🇪🇸 Español</button>
-            <button class="lang-option" data-lang="ru">🇷🇺 Русский</button>
-        </div>
+<body data-active-scene="hero">
+    <!-- Background Stage: Random Dynamic Wallpapers (Always Green Overlay) + Swiss Grid + 3D ASCII Sphere -->
+    <div class="bg-stage" aria-hidden="true">
+        <div class="bg-layer is-active" id="bgLayerA"></div>
+        <div class="bg-layer" id="bgLayerB"></div>
+        <div class="bg-tint-overlay" id="bgTintOverlay"></div>
+        <div class="swiss-grid"></div>
+        <canvas id="fxCanvas" class="fx-canvas"></canvas>
+        <div class="bg-scanlines"></div>
+        <div class="bg-vignette"></div>
     </div>
 
-    <div class="music-panel" id="musicPanel">
-        <div class="music-panel-header">
-            <i class="fas fa-music"></i>
-            <span id="musicSectionTitle">Música</span>
-        </div>
-        <div class="music-toggle-btn" id="musicToggle">
-            <div class="toggle-track">
-                <div class="toggle-thumb"></div>
-            </div>
-            <div class="toggle-content">
-                <i class="fas fa-volume-up toggle-icon"></i>
-                <span class="toggle-status">ON</span>
-            </div>
-        </div>
-        <div class="volume-control">
-            <i class="fas fa-volume-down"></i>
-            <input type="range" id="volumeSlider" min="0" max="100" value="70">
-            <i class="fas fa-volume-up"></i>
-        </div>
-        <div class="playlist-controls">
-            <button class="playlist-btn" id="prevBtn"><i class="fas fa-backward"></i></button>
-            <span class="now-playing" id="nowPlaying">OST1.m4a</span>
-            <button class="playlist-btn" id="nextBtn"><i class="fas fa-forward"></i></button>
-        </div>
-    </div>
+    <!-- Top Utility Bar: Player + Language Switcher -->
+    <header class="optimus-navbar" aria-label="Controles da página">
+        <div class="nav-controls">
+            <aside class="music-panel" id="musicPanel" aria-label="Player de música">
+                <div class="music-pill-bar">
+                    <button type="button" class="music-play-btn" id="musicToggle" aria-label="Reproduzir ou pausar música">
+                        <span class="eq-bars" aria-hidden="true">
+                            <span></span><span></span><span></span><span></span>
+                        </span>
+                        <i class="fas fa-play play-fallback-icon" aria-hidden="true"></i>
+                    </button>
 
+                    <div class="music-meta">
+                        <div class="music-row-top">
+                            <span class="music-kicker" id="musicSectionTitle">Trilha Sonora</span>
+                            <span class="music-timer" id="musicTimer">00:00</span>
+                        </div>
+                        <div class="music-track-name" id="nowPlaying">OST 01</div>
+                        <div class="music-progress-track" aria-hidden="true">
+                            <div class="music-progress-fill" id="musicProgressFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="music-nav-group">
+                        <button type="button" class="playlist-btn" id="prevBtn" aria-label="Faixa anterior">
+                            <i class="fas fa-backward-step" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="playlist-btn" id="nextBtn" aria-label="Próxima faixa">
+                            <i class="fas fa-forward-step" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="playlist-btn music-drawer-toggle" id="musicDrawerToggle" aria-expanded="false" aria-label="Controles de volume">
+                            <i class="fas fa-sliders" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="music-drawer" id="musicDrawer">
+                    <div class="volume-control">
+                        <i class="fas fa-volume-low" aria-hidden="true"></i>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="65" aria-label="Volume">
+                        <span class="volume-value" id="volumeValue">65%</span>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="language-selector" id="languageSelector">
+                <button type="button" class="lang-pill-btn" id="languageMenuBtn" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-globe" aria-hidden="true"></i>
+                    <span class="lang-label-full" id="currentLanguageLabel">Português</span>
+                    <span class="lang-label-short" id="currentLanguageShort">PT</span>
+                    <i class="fas fa-chevron-down lang-chevron" aria-hidden="true"></i>
+                </button>
+
+                <div class="language-dropdown" id="languageDropdown" role="menu">
+                    <button type="button" class="lang-option" data-lang="pt" role="menuitem">
+                        <span class="lang-flag">🇧🇷</span>
+                        <span>Português</span>
+                    </button>
+                    <button type="button" class="lang-option" data-lang="en" role="menuitem">
+                        <span class="lang-flag">🇺🇸</span>
+                        <span>English</span>
+                    </button>
+                    <button type="button" class="lang-option" data-lang="es" role="menuitem">
+                        <span class="lang-flag">🇪🇸</span>
+                        <span>Español</span>
+                    </button>
+                    <button type="button" class="lang-option" data-lang="ru" role="menuitem">
+                        <span class="lang-flag">🇷🇺</span>
+                        <span>Русский</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Optimus Architectural Frame -->
     <main class="page-wrapper">
-        <div class="linktree-card">
-            <div class="card-content">
-                <div class="header">
-                    <div class="avatar-frame">
-                        <div class="avatar-glow"></div>
-                        <img src="assets/logo/logo.png" alt="Ecológica Verde" class="avatar-img">
-                    </div>
-                    <h1 class="title" id="siteTitle">Ecológica Verde</h1>
-                    <p class="subtitle" id="siteSubtitle">Divulgando coisas "compradas" ecologicamente.</p>
-                </div>
+        <section class="optimus-shell" id="hubCard">
+            <div class="shell-spotlight" id="cardSpotlight" aria-hidden="true"></div>
 
-                <div class="links-list" id="linksContainer">
-                    <div class="placeholder-links">
-                        <div class="placeholder-item"></div>
-                        <div class="placeholder-item"></div>
-                        <div class="placeholder-item"></div>
-                        <div class="placeholder-item"></div>
-                        <div class="placeholder-item"></div>
-                        <div class="placeholder-item"></div>
-                        <div class="placeholder-item"></div>
-                        <div class="placeholder-item"></div>
+            <!-- Hero Editorial Band (No Eyebrow Domain Text) -->
+            <header class="hero-band">
+                <div class="hero-identity">
+                    <img src="assets/logo/logo.png" alt="Ecológica Verde" class="brand-logo-clean">
+                    <div class="hero-copy">
+                        <h1 class="title" id="siteTitle">Ecológica <span class="title-underline">Verde</span></h1>
+                        <p class="subtitle" id="siteSubtitle">Divulgando coisas "compradas" ecologicamente.</p>
                     </div>
                 </div>
 
-                <div class="share-section">
-                    <div class="share-section-title" id="shareSectionTitle">
-                        <i class="fas fa-share-alt"></i>
-                        <span>Compartilhar</span>
+                <!-- Two-Cell Hairline KPI Strip -->
+                <div class="kpi-grid" aria-label="Estatísticas da comunidade">
+                    <div class="kpi-cell">
+                        <span class="kpi-value" id="totalReachValue">89.1K+</span>
+                        <span class="kpi-label" id="statTotalLabel">Comunidade total</span>
                     </div>
-                    <div class="share-buttons-horizontal">
-                        <button class="share-action-btn-horizontal" id="copyLinkBtn">
-                            <i class="fas fa-link"></i>
-                            <span id="copyLinkText">Copiar Link</span>
-                        </button>
-                        <button class="share-action-btn-horizontal" id="whatsappBtn">
-                            <i class="fab fa-whatsapp"></i>
-                            <span id="whatsappText">WhatsApp</span>
-                        </button>
-                        <button class="share-action-btn-horizontal" id="qrCodeBtn">
-                            <i class="fas fa-qrcode"></i>
-                            <span id="qrCodeText">QR Code</span>
-                        </button>
+                    <div class="kpi-cell">
+                        <span class="kpi-value" id="totalChannelsValue">8</span>
+                        <span class="kpi-label" id="statLinksLabel">Redes conectadas</span>
                     </div>
+                </div>
+            </header>
+
+            <!-- Social Links Architectural 2x4 Hairline Grid -->
+            <nav class="links-grid" id="linksContainer" aria-label="Redes sociais e links oficiais">
+                <div class="placeholder-cell"></div>
+                <div class="placeholder-cell"></div>
+                <div class="placeholder-cell"></div>
+                <div class="placeholder-cell"></div>
+                <div class="placeholder-cell"></div>
+                <div class="placeholder-cell"></div>
+                <div class="placeholder-cell"></div>
+                <div class="placeholder-cell"></div>
+            </nav>
+
+            <!-- Restored Clean Bottom Share & Copyright Bar -->
+            <footer class="shell-footer">
+                <div class="footer-meta">
+                    <span class="copyright">&copy; 2024–2026 Ecológica Verde</span>
+                    <span class="meta-sep" aria-hidden="true">/</span>
+                    <span class="nonprofit" id="nonprofitText">Projeto sem fins lucrativos</span>
                 </div>
 
-                <div class="footer-text">
-                    <p class="copyright">&copy; 2024–2026 Ecológica Verde</p>
-                    <p class="nonprofit" id="nonprofitText">Projeto sem fins lucrativos</p>
+                <div class="share-pills">
+                    <span class="share-kicker" id="shareSectionTitle">
+                        <span id="shareTitleText">Compartilhar</span>
+                    </span>
+                    <button type="button" class="pill-btn pill-primary" id="copyLinkBtn">
+                        <i class="fas fa-link" aria-hidden="true"></i>
+                        <span id="copyLinkText">Copiar Link</span>
+                    </button>
+                    <button type="button" class="pill-btn pill-outline" id="whatsappBtn">
+                        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                        <span id="whatsappText">WhatsApp</span>
+                    </button>
+                    <button type="button" class="pill-btn pill-outline" id="qrCodeBtn">
+                        <i class="fas fa-qrcode" aria-hidden="true"></i>
+                        <span id="qrCodeText">QR Code</span>
+                    </button>
                 </div>
-            </div>
-        </div>
+            </footer>
+        </section>
     </main>
 
-    <div id="qrModal" class="qr-modal">
+    <!-- QR Code Modal -->
+    <div id="qrModal" class="qr-modal" role="dialog" aria-modal="true" aria-labelledby="qrTitle" hidden>
         <div class="qr-modal-content">
-            <span class="qr-close">&times;</span>
-            <h3 id="qrTitle">QR Code</h3>
-            <div id="qrCodeContainer"></div>
-            <p id="qrInstruction">Escaneie o QR Code para acessar esta página</p>
+            <button type="button" class="qr-close" id="qrCloseBtn" aria-label="Fechar">&times;</button>
+            <h3 id="qrTitle">Compartilhar via QR Code</h3>
+            <div id="qrCodeContainer" class="qr-box"></div>
+            <p class="qr-instruction" id="qrInstruction">Escaneie com a câmera do seu celular para acessar esta página</p>
+            <button type="button" class="pill-btn pill-primary qr-download-btn" id="qrDownloadBtn">
+                <i class="fas fa-download" aria-hidden="true"></i>
+                <span id="qrDownloadText">Baixar PNG</span>
+            </button>
         </div>
     </div>
 
-    <div id="toastMessage" class="toast-message"></div>
+    <!-- Toast Notification -->
+    <div id="toastMessage" class="toast-message" role="status" aria-live="polite"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" defer></script>
+    <script src="js/i18n.js" defer></script>
+    <script src="js/media-discovery.js" defer></script>
+    <script src="js/scenes.js" defer></script>
+    <script src="js/optimus-fx.js" defer></script>
+    <script src="js/player.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
